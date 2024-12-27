@@ -1,0 +1,96 @@
+<div>
+    <h2>Lista de Estudiantes</h2>
+    <table>
+    <thead>
+        <tr>
+        <th>Código</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Calificacion Final</th>
+        <th>Estado</th>
+        <th>Examen Recuperación</th>
+        <th>Nota Definitiva</th>
+        <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let estudiante of estudiantes">
+        <td>{{ estudiante.codigo }}</td>
+        <td>{{ estudiante.nombres }}</td>
+        <td>{{ estudiante.apellidos }}</td>
+        <td>{{ estudiante.calificacionFinal }}</td>
+        <td>{{ estudiante.estadoAprobatorio }}</td>
+        <td>{{ estudiante.examenRecuperacion || '-' }}</td>
+        <td>{{ estudiante.notaDefinitiva || '-' }}</td>
+        <td>
+            <button *ngIf="estudiante.estadoAprobatorio === 'Recuperación'" (click)="seleccionarRecuperacion(estudiante)">
+            Recuperación
+            </button>
+            <button (click)="editarEstudiante(estudiante)">Editar</button>
+            <button (click)="eliminarEstudiante(estudiante.codigo)">Eliminar</button>
+        </td>
+        </tr>
+    </tbody>
+    </table>
+
+    <div *ngIf="estudianteSeleccionado">
+    <h3>Ingresar Nota de Recuperación</h3>
+    <label>Nota de Recuperación:</label>
+    <input type="number" [(ngModel)]="notaRecuperacion" required />
+    <button (click)="guardarRecuperacion()">Guardar</button>
+    </div>
+
+  
+    <h3>Agregar o Modificar Estudiante</h3>
+    <form (ngSubmit)="guardarEstudiante()">
+      <label>Código:</label>
+      <input type="text" [(ngModel)]="nuevoEstudiante.codigo" name="codigo" required />
+      
+      <label>Nombres:</label>
+      <input type="text" [(ngModel)]="nuevoEstudiante.nombres" name="nombres" required />
+      
+      <label>Apellidos:</label>
+      <input type="text" [(ngModel)]="nuevoEstudiante.apellidos" name="apellidos" required />
+      
+      <label>Sexo:</label>
+      <select [(ngModel)]="nuevoEstudiante.sexo" name="sexo" required>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+      </select>
+      
+      <label>Parcial 1:</label>
+      <input type="number" [(ngModel)]="nuevoEstudiante.parcial1" name="parcial1" required />
+  
+      <label>Parcial 2:</label>
+      <input type="number" [(ngModel)]="nuevoEstudiante.parcial2" name="parcial2" required />
+  
+      <button type="submit">Guardar</button>
+      <button type="button" (click)="cancelarEdicion()" *ngIf="estudianteEnEdicion">Cancelar</button>
+    </form>
+  
+    <div>
+      <h3>Consultas</h3>
+      <button (click)="consultarEstadisticas()">Ver Estadísticas</button>
+    
+      <div *ngIf="mostrarEstadisticas">
+        <p *ngIf="estadisticas && estadisticassexo">
+          Porcentaje Aprobados: {{ estadisticas.aprobados | number:'1.2-2' }}% <br />
+          Porcentaje Reprobados: {{ estadisticas.reprobados | number:'1.2-2' }}% <br />
+          Porcentaje Aprobados Hombres: {{ estadisticassexo.masculinos | number:'1.2-2' }}% <br />
+          Porcentaje Aprobados Mujeres: {{ estadisticassexo.femeninos | number:'1.2-2' }}% <br />
+          Promedio General: {{ promedioGeneral | number:'1.2-2' }} <br />
+        </p>
+    
+        <h4>Estudiantes con Nota Definitiva Mayor al Promedio</h4>
+        <ul *ngIf="estudiantesMayorNota.length > 0; else noEstudiantes">
+          <li *ngFor="let estudiante of estudiantesMayorNota">
+            {{ estudiante.nombres }} {{ estudiante.apellidos }} - Nota Definitiva: {{ estudiante.notaDefinitiva || estudiante.calificacionFinal }}
+          </li>
+        </ul>
+        <ng-template #noEstudiantes>
+          <p>No hay estudiantes con nota mayor al promedio.</p>
+        </ng-template>
+      </div>
+    </div>
+      
+  </div>
